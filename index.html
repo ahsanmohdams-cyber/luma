@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LUMA — Cinematic TV</title>
+<style>
+:root{--fg:#f7f7f5;--muted:#c7c8cb;--glass:rgba(9,12,18,.62);--line:rgba(255,255,255,.18)}
+*{box-sizing:border-box}body{margin:0;background:#080b10;color:var(--fg);font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+#wall{position:fixed;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.16)),linear-gradient(0deg,rgba(0,0,0,.55),transparent 60%),url('https://images.unsplash.com/photo-150053085569-b586d89ba3ee?w=3840&q=90') center/cover;transition:background-image .7s}
+header{position:absolute;top:5vh;left:5vw;right:5vw;display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:clamp(28px,4vw,52px);letter-spacing:.24em;font-weight:300}.date{color:var(--muted);font-size:clamp(12px,1.5vw,18px)}
+main{position:absolute;left:5vw;top:27vh;max-width:62vw}.eyebrow{font-size:13px;letter-spacing:.25em;color:#d9dce2;text-transform:uppercase}.headline{font-size:clamp(34px,6vw,82px);font-weight:300;line-height:1.02;margin:15px 0}.sub{color:#d2d4d8;font-size:clamp(14px,1.6vw,20px);max-width:600px;line-height:1.5}
+.apps{position:absolute;left:5vw;right:5vw;bottom:8vh;display:flex;gap:14px;flex-wrap:wrap}
+.tile{min-width:clamp(95px,12vw,150px);height:clamp(68px,9vw,100px);padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--glass);color:white;text-align:left;font-size:clamp(12px,1.4vw,17px);cursor:pointer;backdrop-filter:blur(12px);transition:.18s}
+.tile span{display:block;font-size:24px;margin-bottom:7px}.tile:focus,.tile:hover{outline:2px solid white;transform:translateY(-5px);background:rgba(255,255,255,.18)}
+.hint{position:absolute;bottom:2.5vh;right:5vw;color:#c8cbd1;font-size:12px}
+.panel{display:none;position:fixed;right:3vw;top:10vh;bottom:8vh;width:min(460px,90vw);padding:24px;border:1px solid var(--line);border-radius:20px;background:rgba(7,10,16,.9);backdrop-filter:blur(24px);box-shadow:0 20px 80px #0008;overflow:auto}
+.panel.open{display:block}.panel h2{font-weight:400;letter-spacing:.08em}.close{float:right;background:none;color:white;border:1px solid var(--line);padding:8px 12px;border-radius:9px}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid var(--line);background:#ffffff12;color:white;font-size:16px;margin-top:12px}button{cursor:pointer}.action{background:#e9edf3;color:#10141b;border:0;padding:12px 16px;border-radius:10px;margin-top:10px}
+#reply{color:#d7dce4;line-height:1.5;white-space:pre-wrap}.small{font-size:12px;color:#aeb5c0;line-height:1.5}
+</style></head>
+<body>
+<div id="wall"></div>
+<header><div class="brand">LUMA</div><div class="date" id="clock"></div></header>
+<main><div class="eyebrow">A calmer way to watch</div><div class="headline" id="greeting">Your screen.<br>Your world.</div><div class="sub">A cinematic home for entertainment, media and your AI assistant.</div></main>
+<nav class="apps" aria-label="Launcher">
+<button class="tile" data-action="YouTube"><span>▶</span>YouTube</button>
+<button class="tile" data-action="Netflix"><span>▰</span>Netflix</button>
+<button class="tile" data-action="Prime Video"><span>◉</span>Prime Video</button>
+<button class="tile" data-action="Apps"><span>▦</span>Apps</button>
+<button class="tile" data-action="USB Media"><span>▤</span>USB Media</button>
+<button class="tile" data-action="SADIE"><span>✦</span>SADIE AI</button>
+<button class="tile" data-action="Voice"><span>🎙</span>Voice</button>
+<button class="tile" data-action="Settings"><span>⚙</span>Settings</button>
+</nav><div class="hint">Use TV remote ← → ↑ ↓ and OK · Press Back / Esc to close</div>
+<section class="panel" id="panel"><button class="close" id="close">Close ✕</button><h2 id="panelTitle">SADIE</h2><div id="panelBody"></div></section>
+<script>
+const panel=document.getElementById('panel'),title=document.getElementById('panelTitle'),body=document.getElementById('panelBody');
+function clock(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+' · '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});let h=d.getHours();document.getElementById('greeting').innerHTML=h<12?'Good morning.<br>Your world awaits.':h<17?'Good afternoon.<br>Make it yours.':h<20?'Good evening.<br>Settle in.':'Your screen.<br>Your world.'}
+clock();setInterval(clock,30000);
+const scenes=[
+'https://images.unsplash.com/photo-150053085569-b586d89ba3ee?w=3840&q=90',
+'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=3840&q=90',
+'https://images.unsplash.com/photo-1500534623283-312aade485b7?w=3840&q=90',
+'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=3840&q=90'];
+let scene=Math.floor(new Date().getDate()/1)%scenes.length;
+function setScene(i){scene=(i+scenes.length)%scenes.length;document.getElementById('wall').style.backgroundImage=`linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.16)),linear-gradient(0deg,rgba(0,0,0,.55),transparent 60%),url("${scenes[scene]}")`}
+setScene(scene);
+function openPanel(name){title.textContent=name;panel.classList.add('open');
+if(name==='SADIE'||name==='Voice'){body.innerHTML='<p class="small">SADIE is integrated here as a local demo. A live AI service and TV voice permissions are required for full assistant features.</p><input id="ask" placeholder="Ask SADIE something…" autofocus><button class="action" id="send">Ask SADIE</button><p id="reply"></p>';document.getElementById('send').onclick=ask;document.getElementById('ask').onkeydown=e=>{if(e.key==='Enter')ask()};}
+else if(name==='USB Media'){body.innerHTML='<p>USB media browsing is not available to ordinary TV-browser pages unless VIDAA exposes file access.</p><p class="small">Open the TV’s built-in Media / Input app to browse a connected USB drive.</p>'}
+else if(name==='Settings'){body.innerHTML='<p>Wallpaper mode: time-adaptive + daily rotation.</p><button class="action" id="wallpaper">Change wallpaper</button><p class="small">Native app launching, replacing the VIDAA home screen, and system-level remote control require VIDAA support. This web prototype cannot guarantee those functions.</p>';document.getElementById('wallpaper').onclick=()=>setScene(scene+1)}
+else {body.innerHTML=`<p>${name} shortcut selected.</p><p class="small">This browser prototype cannot launch native VIDAA apps directly. Use the TV home screen or app store for the actual app.</p>`}
+}
+function ask(){const q=document.getElementById('ask').value.trim(),r=document.getElementById('reply');if(!q)return;let a='I’m the LUMA demo assistant. A connected AI backend is needed to answer general questions.';if(/time/i.test(q))a='The time is '+new Date().toLocaleTimeString();else if(/wallpaper/i.test(q)){setScene(scene+1);a='Wallpaper changed.'}else if(/hello|hi\b/i.test(q))a='Hello! I’m SADIE, inside LUMA.';else if(/youtube/i.test(q))a='Select the YouTube tile. Native app launch depends on VIDAA support.';r.textContent=a;try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(a))}catch(e){}}
+document.querySelectorAll('.tile').forEach((b,i)=>b.onclick=()=>openPanel(b.dataset.action));
+document.getElementById('close').onclick=()=>panel.classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'){panel.classList.remove('open');return}if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)){const a=[...document.querySelectorAll('.tile')],i=a.indexOf(document.activeElement);if(i<0){a[0].focus();return}e.preventDefault();let n=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:e.key==='ArrowDown'?i+4:i-4;a[(n+a.length)%a.length].focus()}if(e.key==='Enter'&&document.activeElement.classList.contains('tile'))document.activeElement.click()});
+</script></body></html>
